@@ -4,45 +4,64 @@
 //#44A340 - 3
 //#1E6823 - 4 (max)
 
-((audioContext, freq, delay) => {
+((audioContext, freq, delay, waveform) => {
   'use strict';
-  const levels = {"#eeeeee": freq, "#d6e685": freq * (3/2), "#8cc665": freq * (3/2) * 2, "#44a340": freq * (3/2) * 3, "#1e6823": freq * (3/2) * 4};
-  const noteBars = ([].slice.call(document.getElementsByTagName('g'))).slice(1).map((week) => {
-    return createOscillators(audioContext, [].slice.call(week.getElementsByClassName('day')));
-  });
+  const levels = { '#eeeeee': freq, '#d6e685': freq * (3 / 2), '#8cc665': freq * (3 / 2) * 2, '#44a340': freq * (3 / 2) * 3, '#1e6823': freq * (3 / 2) * 4 };
 
-  let i = 0;
-  for (let noteBar of noteBars) {
-    ((j) => {
-      setTimeout(() => {
-        for (let node of noteBar) {
-          const initColor = node.fill.nodeValue;
-          node.fill.nodeValue = 'red';
-          node.oscillator.start(0);
-          setTimeout(() => {
-            node.fill.nodeValue = initColor;
-            node.oscillator.stop();
-          }, delay / 2);
-        }
-      }, delay * j);
-    })(i += 1);
-}
+  const createOscillator = (fillNodeValue) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.1;
+    oscillator.type = waveform;
+    oscillator.frequency.value = levels[fillNodeValue];
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
 
-  function createOscillators(context, week) {
+    return {
+      start: () => oscillator.start(0),
+      stop: () => oscillator.stop()
+    };
+  };
+
+  const createNotes = (week) => {
     return week.map((day) => {
-      const freq = levels[day.attributes.fill.nodeValue];
-      const oscillator = context.createOscillator();
-      const gainNode = context.createGain();
-      gainNode.gain.value = 0.1;
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.value = freq;
-      oscillator.connect(gainNode);
-      gainNode.connect(context.destination);
+      const fillNodeValue = day.attributes.fill.nodeValue;
+      const oscillator = createOscillator(fillNodeValue);
+
       return {
-        oscillator,
-        fill: day.attributes.fill
+        play: () => {
+          day.attributes.fill.nodeValue = 'red';
+          oscillator.start();
+        },
+        stop: () => {
+          day.attributes.fill.nodeValue = fillNodeValue;
+          oscillator.stop();
+        }
       };
     });
   };
 
-})(new AudioContext, 440, 100);
+  const delayPlay = (noteBar) => {
+    return (iter) => {
+      setTimeout(() => {
+        for (let note of noteBar) {
+          note.play();
+          setTimeout(() => {
+            note.stop();
+          }, delay / 2);
+        }
+      }, delay * iter);
+    };
+  };
+
+  const noteBars = ([].slice.call(document.getElementsByTagName('g'))).slice(1).map((week) => {
+    return createNotes([].slice.call(week.getElementsByClassName('day')));
+  }).map((day) => {
+    return delayPlay(day);
+  });
+
+  let i = 0;
+  for (let noteBar of noteBars) {
+    noteBar(i += 1);
+  }
+})(new AudioContext, 440, 110, 'sawtooth');
