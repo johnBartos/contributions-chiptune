@@ -1,5 +1,5 @@
 # contributions-chiptune
-What does your contributions graph sound like? Find out with this script! It works iterating through the contributions graph one week at a time and assigning each day of the week a frequency based on its color value. The frequencies for the week are overlayed and then played by a Web Audio API oscillator, creating a neat chiptune.
+What does your contributions graph sound like? Find out with this script! It works iterating through the contributions graph one week at a time and assigning each day of the week a frequency based on its color value. The frequencies for the week are then overlayed and played by a Web Audio API oscillator, creating a neat chiptune.
 
 ##How to use
 1. Open up the dev console with f12
