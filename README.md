@@ -3,7 +3,7 @@ What does your contributions graph sound like? Find out with this script! It wor
 
 ##How to use
 1. Navigate to your git profile page and open up the dev console with f12
-2. Paste `makenoise.min.js` (or non-min, if you're brave) into the console
+2. Paste [`makenoise.min.js`](https://raw.githubusercontent.com/johnBartos/contributions-chiptune/master/makenoise.min.js) (or non-min, if you're brave) into the console
 3. Lower your volume a lil' bit
 3. Press enter if you haven't already
 
