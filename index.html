@@ -1,11 +1,12 @@
 <h2>Contributions Chiptune</h2>
 <div>Enter a profile name!</div>
-<form method="GET" onSubmit="play()"><input id="input" type="text" name="profileUrl" value="https://github.com/johnBartos"></input>
+<form method="GET" onSubmit="play()"><input id="input" type="text" name="profileUrl" value="johnBartos"></input>
 </form>
 <script>
   document.getElementById("input").focus()
   play = function () {
-    profileUrl = document.getElementById("input").value;
+    // TODO validate profile name?
+    profileUrl = "https://github.com/" + document.getElementById("input").value;
     alert(profileUrl);
     
   }
