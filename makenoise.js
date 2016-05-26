@@ -8,32 +8,30 @@
   'use strict';
   const levels = { '#eeeeee': freq, '#d6e685': freq * (3 / 2), '#8cc665': freq * (3 / 2) * 2, '#44a340': freq * (3 / 2) * 3, '#1e6823': freq * (3 / 2) * 4 };
 
-  const createOscillator = () => {
+  const createOscillator = (fillNodeValue) => {
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0.1;
     oscillator.type = waveform;
+    oscillator.frequency.value = levels[fillNodeValue];
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
     return {
-      play: color => {
-        oscillator.frequency.value = levels[color];
-      },
       start: () => oscillator.start(0),
       stop: () => oscillator.stop()
     };
   };
 
-  const createNotes = (week, oscillator) => {
+  const createNotes = (week) => {
     return week.map((day) => {
       const fillNodeValue = day.attributes.fill.nodeValue;
-      // const oscillator = createOscillator(fillNodeValue);
+      const oscillator = createOscillator(fillNodeValue);
 
       return {
         play: () => {
           day.attributes.fill.nodeValue = 'red';
-          oscillator.play(fillNodeValue);
+          oscillator.start();
         },
         stop: () => {
           day.attributes.fill.nodeValue = fillNodeValue;
@@ -56,11 +54,8 @@
     };
   };
 
-  const oscillator = createOscillator();
-  oscillator.start();
-
   const noteBars = ([].slice.call(document.getElementsByTagName('g'))).slice(1).map((week) => {
-    return createNotes([].slice.call(week.getElementsByClassName('day')), oscillator);
+    return createNotes([].slice.call(week.getElementsByClassName('day')));
   }).map((day) => {
     return delayPlay(day);
   });
