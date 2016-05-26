@@ -48,9 +48,9 @@
       setTimeout(() => {
         for (let note of noteBar) {
           note.play();
-          setTimeout(() => {
-            note.stop();
-          }, delay / 2);
+          // setTimeout(() => {
+          //   note.stop();
+          // }, delay / 2);
         }
       }, delay * iter);
     };
@@ -69,4 +69,5 @@
   for (let noteBar of noteBars) {
     noteBar(i += 1);
   }
+  setTimeout(() => { oscillator.stop(); }, delay * i);
 })(new AudioContext, 440, 110, 'sawtooth');
